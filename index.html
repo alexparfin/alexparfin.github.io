@@ -7,8 +7,8 @@
   </head>
   <body>
     <a-scene mindar-image="imageTargetSrc: ./targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-      <a-assets timeout="30000">
-        <video id="ar-video" src="./video.mp4" autoplay loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
+      <a-assets>
+        <video id="ar-video" src="./video.mp4" preload="auto" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -17,5 +17,15 @@
         <a-plane src="#ar-video" position="0 0 0" height="0.552" width="1" rotation="0 0 0"></a-plane>
       
     </a-scene>
+
+    <script>
+      // Запуск видео при любом касании экрана смартфона
+      document.body.addEventListener('click', () => {
+        const video = document.getElementById('ar-video');
+        if (video && video.paused) {
+          video.play();
+        }
+      });
+    </script>
   </body>
 </html>
