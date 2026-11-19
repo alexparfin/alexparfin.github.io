@@ -3,20 +3,26 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>WebAR Тест</title>
-    <!-- Для продакшена скачайте эти 2 скрипта на свой сервер -->
     <script src="./aframe.min.js"></script>
     <script src="./mindar-image-aframe.prod.js"></script>
     <style>
       body { margin: 0; overflow: hidden; }
       #start-btn {
         position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-        z-index: 999; padding: 12px 24px; font-size: 16px;
+        z-index: 999; padding: 14px 24px; font-size: 16px;
         background: #007bff; color: white; border: none; border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      }
+      #status {
+        position: fixed; top: 15px; left: 50%; transform: translateX(-50%);
+        z-index: 999; padding: 8px 16px; font-size: 14px; font-family: sans-serif;
+        background: rgba(0,0,0,0.6); color: white; border-radius: 20px;
       }
     </style>
   </head>
   <body>
-    <button id="start-btn">Включить звук и видео</button>
+    <div id="status">Наведите камеру на картинку...</div>
+    <button id="start-btn">1. Нажмите здесь для запуска видео</button>
 
     <a-scene
       mindar-image="imageTargetSrc: ./targets.mind;"
@@ -26,15 +32,15 @@
       device-orientation-permission-ui="enabled: false">
 
       <a-assets>
-        <!-- Видеофайл -->
-        <video id="ar-video" src="./video.mp4" preload="auto" loop="true" playsinline webkit-playsinline crossorigin="anonymous"></video>
+        <video id="ar-video" src="./video.mp4" preload="auto" loop="true" muted playsinline webkit-playsinline crossorigin="anonymous"></video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <!-- Привязка к первой картинке (targetIndex: 0) -->
       
-        <!-- Плоскость с видео (ширина 1, высота подбирается под пропорции видео) -->
+        <!-- Тестовая зеленая подложка (появится, как только камера узнает картинку) -->
+        <a-plane color="#00ff00" opacity="0.4" position="0 0 -0.01" width="1.05" height="0.6"></a-plane>
+        <!-- Само видео (соотношение 16:9 как в вашем ролике) -->
         <a-video src="#ar-video" position="0 0 0" width="1" height="0.5625"></a-video>
       
     </a-scene>
@@ -43,16 +49,26 @@
       const video = document.getElementById('ar-video');
       const btn = document.getElementById('start-btn');
       const target = document.getElementById('target-entity');
+      const statusText = document.getElementById('status');
 
-      // Разблокировка воспроизведения по клику пользователя
       btn.addEventListener('click', () => {
-        video.play();
-        btn.style.display = 'none';
+        video.muted = false;
+        video.play().then(() => {
+          btn.style.display = 'none';
+        }).catch(err => {
+          statusText.innerText = 'Ошибка запуска: ' + err.message;
+        });
       });
 
-      // Автопауза, если камеру отвели от страницы
-      target.addEventListener('targetFound', () => { video.play(); });
-      target.addEventListener('targetLost', () => { video.pause(); });
+      target.addEventListener('targetFound', () => {
+        statusText.innerText = 'Картинка распознана!';
+        video.play();
+      });
+
+      target.addEventListener('targetLost', () => {
+        statusText.innerText = 'Наведите камеру на картинку...';
+        video.pause();
+      });
     </script>
   </body>
 </html>
