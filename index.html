@@ -4,76 +4,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="./aframe.min.js"></script>
     <script src="./mindar-image-aframe.prod.js"></script>
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-      }
-      #unmute-btn {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 999;
-        padding: 10px 18px;
-        font-size: 16px;
-        border: none;
-        border-radius: 8px;
-        background: rgba(0, 0, 0, 0.75);
-        color: #fff;
-        display: none;
-      }
-    </style>
   </head>
   <body>
-    <button id="unmute-btn">Включить звук</button>
-    <a-scene
-      mindar-image="imageTargetSrc: ./targets.mind;"
-      color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights"
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false"
-    >
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind;" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
       <a-assets>
-        <video
-          id="ar-video"
-          src="./video.mp4"
-          preload="auto"
-          loop
-          muted
-          playsinline
-          webkit-playsinline
-          crossorigin="anonymous"
-        ></video>
+        <video id="ar-video" src="./video.mp4" preload="auto" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
       </a-assets>
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-        <!-- Подгоните height под пропорции вашего видео (для 16:9 это 0.5625 при width="1") -->
-        <a-plane
-          src="#ar-video"
-          position="0 0 0"
-          width="1"
-          height="0.5625"
-        ></a-plane>
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-plane src="#ar-video" position="0 0 0" height="0.552" width="1" rotation="0 0 0"></a-plane>
+      </a-entity>
     </a-scene>
-    <script>
-      const targetEl = document.querySelector('#target-0');
-      const videoEl = document.querySelector('#ar-video');
-      const unmuteBtn = document.querySelector('#unmute-btn');
-      targetEl.addEventListener('targetFound', () => {
-        videoEl.play().catch((err) => console.warn('Ошибка запуска видео:', err));
-        if (videoEl.muted) {
-          unmuteBtn.style.display = 'block';
-        }
-      });
-      targetEl.addEventListener('targetLost', () => {
-        videoEl.pause();
-        unmuteBtn.style.display = 'none';
-      });
-      unmuteBtn.addEventListener('click', () => {
-        videoEl.muted = false;
-        videoEl.play();
-        unmuteBtn.style.display = 'none';
-      });
-    </script>
   </body>
 </html>
