@@ -2,30 +2,30 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>WebAR Тест</title>
+    <title>WebAR Диагностика</title>
     <script src="./aframe.min.js"></script>
     <script src="./mindar-image-aframe.prod.js"></script>
     <style>
       body { margin: 0; overflow: hidden; }
+      #status {
+        position: fixed; top: 15px; left: 50%; transform: translateX(-50%);
+        z-index: 999; padding: 10px 16px; font-size: 14px; font-family: sans-serif;
+        background: rgba(0,0,0,0.8); color: #00ff00; border-radius: 12px;
+        text-align: center; width: 85%;
+      }
       #start-btn {
         position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
         z-index: 999; padding: 14px 24px; font-size: 16px;
         background: #007bff; color: white; border: none; border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      }
-      #status {
-        position: fixed; top: 15px; left: 50%; transform: translateX(-50%);
-        z-index: 999; padding: 8px 16px; font-size: 14px; font-family: sans-serif;
-        background: rgba(0,0,0,0.6); color: white; border-radius: 20px;
       }
     </style>
   </head>
   <body>
-    <div id="status">Наведите камеру на картинку...</div>
-    <button id="start-btn">1. Нажмите здесь для запуска видео</button>
+    <div id="status">Загрузка движка...</div>
+    <button id="start-btn">Включить звук и видео</button>
 
     <a-scene
-      mindar-image="imageTargetSrc: ./targets.mind;"
+      mindar-image="imageTargetSrc: ./targets.mind?v=2; uiScanning: yes;"
       color-space="sRGB"
       renderer="colorManagement: true, physicallyCorrectLights"
       vr-mode-ui="enabled: false"
@@ -38,35 +38,39 @@
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       
-        <!-- Тестовая зеленая подложка (появится, как только камера узнает картинку) -->
-        <a-plane color="#00ff00" opacity="0.4" position="0 0 -0.01" width="1.05" height="0.6"></a-plane>
-        <!-- Само видео (соотношение 16:9 как в вашем ролике) -->
+        <a-plane color="#00ff00" opacity="0.5" position="0 0 -0.01" width="1.05" height="0.6"></a-plane>
         <a-video src="#ar-video" position="0 0 0" width="1" height="0.5625"></a-video>
       
     </a-scene>
 
     <script>
+      const scene = document.querySelector('a-scene');
+      const statusText = document.getElementById('status');
       const video = document.getElementById('ar-video');
       const btn = document.getElementById('start-btn');
       const target = document.getElementById('target-entity');
-      const statusText = document.getElementById('status');
+
+      scene.addEventListener('arReady', () => {
+        statusText.innerText = 'Движок готов! Сканирую картинку...';
+      });
+
+      scene.addEventListener('arError', (event) => {
+        statusText.style.color = '#ff4444';
+        statusText.innerText = 'Ошибка AR: проверьте файл targets.mind';
+      });
 
       btn.addEventListener('click', () => {
         video.muted = false;
-        video.play().then(() => {
-          btn.style.display = 'none';
-        }).catch(err => {
-          statusText.innerText = 'Ошибка запуска: ' + err.message;
-        });
+        video.play().then(() => { btn.style.display = 'none'; });
       });
 
       target.addEventListener('targetFound', () => {
-        statusText.innerText = 'Картинка распознана!';
+        statusText.innerText = 'КАРТИНКА НАЙДЕНА!';
         video.play();
       });
 
       target.addEventListener('targetLost', () => {
-        statusText.innerText = 'Наведите камеру на картинку...';
+        statusText.innerText = 'Сканирую картинку...';
         video.pause();
       });
     </script>
