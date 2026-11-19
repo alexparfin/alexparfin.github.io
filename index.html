@@ -1,78 +1,29 @@
-<!DOCTYPE html>
+
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>WebAR Диагностика</title>
-    <script src="./aframe.min.js"></script>
-    <script src="./mindar-image-aframe.prod.js"></script>
-    <style>
-      body { margin: 0; overflow: hidden; }
-      #status {
-        position: fixed; top: 15px; left: 50%; transform: translateX(-50%);
-        z-index: 999; padding: 10px 16px; font-size: 14px; font-family: sans-serif;
-        background: rgba(0,0,0,0.8); color: #00ff00; border-radius: 12px;
-        text-align: center; width: 85%;
-      }
-      #start-btn {
-        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-        z-index: 999; padding: 14px 24px; font-size: 16px;
-        background: #007bff; color: white; border: none; border-radius: 8px;
-      }
-    </style>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   </head>
   <body>
-    <div id="status">Загрузка движка...</div>
-    <button id="start-btn">Включить звук и видео</button>
-
-    <a-scene
-      mindar-image="imageTargetSrc: ./targets.mind?v=2; uiScanning: yes;"
-      color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights"
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false">
-
+    <a-scene mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.mind;" 
+	color-space="sRGB" 
+	renderer="colorManagement: true, physicallyCorrectLights" 
+	vr-mode-ui="enabled: false" 
+	device-orientation-permission-ui="enabled: false">
       <a-assets>
-        <video id="ar-video" src="./video.mp4" preload="auto" loop="true" muted playsinline webkit-playsinline crossorigin="anonymous"></video>
+	<img id="card" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.png" />
+	<a-asset-item id="avatarModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/softmind/scene.gltf"></a-asset-item>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      
-        <a-plane color="#00ff00" opacity="0.5" position="0 0 -0.01" width="1.05" height="0.6"></a-plane>
-        <a-video src="#ar-video" position="0 0 0" width="1" height="0.5625"></a-video>
-      
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-plane src="#card" position="0 0 0" height="0.552" width="1" rotation="0 0 0"></a-plane>
+        <a-gltf-model rotation="0 0 0 " position="0 0 0.1" scale="0.005 0.005 0.005" src="#avatarModel"
+          animation="property: position; to: 0 0.1 0.1; dur: 1000; easing: easeInOutQuad; loop: true; dir: alternate"
+        >
+      </a-entity>
     </a-scene>
-
-    <script>
-      const scene = document.querySelector('a-scene');
-      const statusText = document.getElementById('status');
-      const video = document.getElementById('ar-video');
-      const btn = document.getElementById('start-btn');
-      const target = document.getElementById('target-entity');
-
-      scene.addEventListener('arReady', () => {
-        statusText.innerText = 'Движок готов! Сканирую картинку...';
-      });
-
-      scene.addEventListener('arError', (event) => {
-        statusText.style.color = '#ff4444';
-        statusText.innerText = 'Ошибка AR: проверьте файл targets.mind';
-      });
-
-      btn.addEventListener('click', () => {
-        video.muted = false;
-        video.play().then(() => { btn.style.display = 'none'; });
-      });
-
-      target.addEventListener('targetFound', () => {
-        statusText.innerText = 'КАРТИНКА НАЙДЕНА!';
-        video.play();
-      });
-
-      target.addEventListener('targetLost', () => {
-        statusText.innerText = 'Сканирую картинку...';
-        video.pause();
-      });
-    </script>
   </body>
 </html>
