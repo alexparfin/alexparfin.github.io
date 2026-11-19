@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WebAR Тест</title>
+    <!-- Для продакшена скачайте эти 2 скрипта на свой сервер -->
+    <script src="./aframe.min.js"></script>
+    <script src="./mindar-image-aframe.prod.js"></script>
+    <style>
+      body { margin: 0; overflow: hidden; }
+      #start-btn {
+        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+        z-index: 999; padding: 12px 24px; font-size: 16px;
+        background: #007bff; color: white; border: none; border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="start-btn">Включить звук и видео</button>
+
+    <a-scene
+      mindar-image="imageTargetSrc: ./targets.mind;"
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false">
+
+      <a-assets>
+        <!-- Видеофайл -->
+        <video id="ar-video" src="./video.mp4" preload="auto" loop="true" playsinline webkit-playsinline crossorigin="anonymous"></video>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <!-- Привязка к первой картинке (targetIndex: 0) -->
+      
+        <!-- Плоскость с видео (ширина 1, высота подбирается под пропорции видео) -->
+        <a-video src="#ar-video" position="0 0 0" width="1" height="0.5625"></a-video>
+      
+    </a-scene>
+
+    <script>
+      const video = document.getElementById('ar-video');
+      const btn = document.getElementById('start-btn');
+      const target = document.getElementById('target-entity');
+
+      // Разблокировка воспроизведения по клику пользователя
+      btn.addEventListener('click', () => {
+        video.play();
+        btn.style.display = 'none';
+      });
+
+      // Автопауза, если камеру отвели от страницы
+      target.addEventListener('targetFound', () => { video.play(); });
+      target.addEventListener('targetLost', () => { video.pause(); });
+    </script>
+  </body>
+</html>
