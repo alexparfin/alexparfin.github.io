@@ -3,12 +3,11 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AR Книга</title>
-  <!-- Подключаем только A-Frame и версию MindAR для A-Frame -->
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <!-- Подключаем ваши локальные файлы из репозитория -->
+  <script src="./aframe.min.js"></script>
+  <script src="./mindar-image-aframe.prod.js"></script>
   <style>
     body { margin: 0; overflow: hidden; }
-    /* Добавлена решетка # перед start-btn */
     #start-btn {
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
       z-index: 999; padding: 12px 24px; font-size: 16px;
@@ -20,7 +19,12 @@
 <body>
   <button id="start-btn">Включить звук</button>
 
-  <a-scene mindar-image="imageTargetSrc: ./targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+  <a-scene 
+    mindar-image="imageTargetSrc: ./targets.mind;" 
+    color-space="sRGB" 
+    renderer="colorManagement: true, physicallyCorrectLights" 
+    vr-mode-ui="enabled: false" 
+    device-orientation-permission-ui="enabled: false">
     
     <a-assets>
       <video id="ar-video" src="./video.mp4" preload="auto" loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
@@ -28,12 +32,10 @@
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- Вернули блок привязки к маркеру с id="target" 
+    <!-- Контейнер с id="target", внутри которого лежит видео -->
     
-    <a-video src="#ar-video" position="0 0 0" width="1" height="0.5625" rotation="0 0 0"></a-video>-->
-
-    <!-- Временный синий прямоугольник для проверки привязки -->
-    <a-plane color="blue" position="0 0 0" height="0.5625" width="1" rotation="0 0 0"></a-plane>
+      <a-video src="#ar-video" position="0 0 0" width="1" height="0.5625" rotation="0 0 0"></a-video>
+    
     
   </a-scene>
 
@@ -42,19 +44,16 @@
     const video = document.querySelector('#ar-video');
     const startBtn = document.querySelector('#start-btn');
 
-    // Когда камера нашла картинку в книге
     target.addEventListener('targetFound', () => {
       video.play();
       if (video.muted) startBtn.style.display = 'block';
     });
 
-    // Когда картинка пропала из кадра
     target.addEventListener('targetLost', () => {
       video.pause();
       startBtn.style.display = 'none';
     });
 
-    // Разблокировка звука по нажатию на экран
     startBtn.addEventListener('click', () => {
       video.muted = false;
       startBtn.style.display = 'none';
