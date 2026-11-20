@@ -4,8 +4,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AR Книга</title>
   <!-- Подключаем только A-Frame и версию MindAR для A-Frame -->
-  <script src="./aframe.min.js"></script>
-  <script src="./mindar-image-aframe.prod.js"></script>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <style>
     body { margin: 0; overflow: hidden; }
     /* Добавлена решетка # перед start-btn */
@@ -28,11 +28,13 @@
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- Вернули блок привязки к маркеру с id="target" -->
+    <!-- Вернули блок привязки к маркеру с id="target" 
     
-      <a-video src="#ar-video" position="0 0 0" width="1" height="0.5625" rotation="0 0 0"></a-video>
-    
+    <a-video src="#ar-video" position="0 0 0" width="1" height="0.5625" rotation="0 0 0"></a-video>-->
 
+    <!-- Временный синий прямоугольник для проверки привязки -->
+    <a-plane color="blue" position="0 0 0" height="0.5625" width="1" rotation="0 0 0"></a-plane>
+    
   </a-scene>
 
   <script>
