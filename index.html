@@ -4,12 +4,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AR Книга</title>
   <!-- Подключаем A-Frame и MindAR -->
+  <script src="./mindar-image.prod.js"></script>
   <script src="./aframe.min.js"></script>
   <script src="./mindar-image-aframe.prod.js"></script>
   <style>
-    body { margin: 0; overflow: hidden; }
     /* Кнопка запуска звука (обязательна для мобильных браузеров) */
-    #start-btn {
+    start-btn {
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
       z-index: 999; padding: 12px 24px; font-size: 16px;
       background: #000; color: #fff; border: none; border-radius: 8px;
@@ -18,52 +18,25 @@
   </style>
 </head>
 <body>
-
   <button id="start-btn">Включить звук</button>
-
-  <a-scene 
-    mindar-image="imageTargetSrc: ./targets.mind; filterMinCF:0.0001; filterBeta: 0.001;" 
-    color-space="sRGB" 
-    renderer="colorManagement: true, physicallyCorrectLights" 
-    vr-mode-ui="enabled: false" 
-    device-orientation-permission-ui="enabled: false">
-
+  <a-scene mindar-image="imageTargetSrc: ./targets.mind;" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
     <a-assets>
       <!-- Важно: muted и playsinline нужны для автозапуска на iOS и Android -->
       <video id="ar-video" src="./video.mp4" preload="auto" loop muted playsinline webkit-playsinline crossorigin="anonymous"></video>
     </a-assets>
-
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
-    <!-- Привязка к первому маркеру (targetIndex: 0) -->
-    
-      <!-- Плоскость с видео. height рассчитывается как: высота_видео / ширина_видео -->
       <a-video src="#ar-video" position="0 0 0" width="1" height="0.5625" rotation="0 0 0"></a-video>
-    
   </a-scene>
-
   <script>
     const target = document.querySelector('#target');
     const video = document.querySelector('#ar-video');
     const startBtn = document.querySelector('#start-btn');
-
     // Когда камера нашла картинку в книге
-    target.addEventListener('targetFound', () => {
-      video.play();
-      if (video.muted) startBtn.style.display = 'block';
-    });
-
+    target.addEventListener('targetFound', () => {video.play(); if (video.muted) startBtn.style.display = 'block'; });
     // Когда картинка пропала из кадра
-    target.addEventListener('targetLost', () => {
-      video.pause();
-      startBtn.style.display = 'none';
-    });
-
+    target.addEventListener('targetLost', () => {video.pause(); startBtn.style.display = 'none'; });
     // Разблокировка звука по нажатию на экран
-    startBtn.addEventListener('click', () => {
-      video.muted = false;
-      startBtn.style.display = 'none';
-    });
+    startBtn.addEventListener('click', () => {video.muted = false; startBtn.style.display = 'none'; });
   </script>
 </body>
 </html>
